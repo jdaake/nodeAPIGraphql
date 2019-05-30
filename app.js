@@ -7,6 +7,7 @@ const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
 const MONGODB_URI = 'mongodb+srv://jdaake:KIsMYluCDtG8RnPi@cluster0-ndib1.mongodb.net/messages';
 const multer = require('multer');
+const auth = require('./middleware/auth');
 const app = express();
 const port = 8080;
 const fileStorage = multer.diskStorage({
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(auth);
 
 app.use('/graphql', graphqlHttp({
     schema: graphqlSchema,
