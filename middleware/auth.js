@@ -5,7 +5,7 @@ module.exports = (req, res, next) => {
     if (!authHeader) {
         req.isAuth = false;
         return next();
-    };
+    }
     const token = authHeader.split(' ')[1];
     let decodedToken;
     try {

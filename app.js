@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const graphqlHttp = require('express-graphql');
@@ -8,8 +9,10 @@ const graphqlResolver = require('./graphql/resolvers');
 const MONGODB_URI = 'mongodb+srv://jdaake:KIsMYluCDtG8RnPi@cluster0-ndib1.mongodb.net/messages';
 const multer = require('multer');
 const auth = require('./middleware/auth');
-const app = express();
 const port = 8080;
+const {
+    clearImage
+} = require('./util/file');
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'images');
@@ -51,6 +54,21 @@ app.use((req, res, next) => {
 });
 
 app.use(auth);
+
+app.put('/post-image', (req, res, next) => {
+    if (!req.file) {
+        return res.status(200).json({
+            message: 'No file provided'
+        });
+    }
+    if (req.body.oldPath) {
+        clearImage(req.body.oldPath)
+    }
+    return res.status(201).json({
+        message: 'File Stored',
+        filePath: req.file.path
+    });
+});
 
 app.use('/graphql', graphqlHttp({
     schema: graphqlSchema,
